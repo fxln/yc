@@ -4,7 +4,9 @@
       <span class="host-info">{{ tab.hostName }} (RDP/TCP)</span>
       <div class="tools">
         <el-button size="small" :icon="Refresh" @click="reconnect">重连</el-button>
-        <el-tag size="small" :type="statusType">{{ statusText }}</el-tag>
+        <el-tag size="small" :type="statusType">
+          <span :class="['status-dot', statusCls]"><i class="dot" />{{ statusText }}</span>
+        </el-tag>
       </div>
     </div>
     <div class="rdp-body">
@@ -26,24 +28,47 @@
         <el-button @click="downloadRdp">下载 .rdp 配置</el-button>
       </div>
     </div>
+
+    <ConnectionErrorDialog
+      v-model="errorDialogVisible"
+      :host-name="tab.hostName"
+      protocol="tcp"
+      :message="errorMsg"
+      :attempts="reconnectAttempts"
+      @cancel="onErrorCancel"
+      @continue="onErrorContinue"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { ElMessage } from 'element-plus';
+import { Refresh } from '@element-plus/icons-vue';
 import { wsUrl } from '../../api';
+import ConnectionErrorDialog from '../common/ConnectionErrorDialog.vue';
 
 const props = defineProps({ tab: { type: Object, required: true } });
+const emit = defineEmits(['close']);
 
 let ws = null;
 const tcpConnected = ref(false);
+const errorDialogVisible = ref(false);
+const errorMsg = ref('');
+let reconnectTimer = null;
+let reconnectAttempts = 0;
+let stopReconnect = false;
 
 const statusText = computed(() => props.tab.status === 'connected' ? '通道已建立' : props.tab.status === 'connecting' ? '连接中' : '未连接');
 const statusType = computed(() => props.tab.status === 'connected' ? 'success' : props.tab.status === 'connecting' ? 'warning' : 'info');
+const statusCls = computed(() => props.tab.status === 'connected' ? 'online' : props.tab.status === 'connecting' ? 'connecting' : 'offline');
 
-function reconnect() {
+function connect() {
+  if (stopReconnect) return;
   try { ws?.close(); } catch {}
+  props.tab.status = 'connecting';
+  errorDialogVisible.value = false;
+
   ws = new WebSocket(`${wsUrl('/ws/tcp')}&hostId=${props.tab.hostId}`);
   ws.onopen = () => { props.tab.status = 'connecting'; };
   ws.onmessage = (ev) => {
@@ -52,14 +77,72 @@ function reconnect() {
       if (msg.type === 'status' && msg.status === 'connected') {
         props.tab.status = 'connected';
         tcpConnected.value = true;
+        reconnectAttempts = 0;
+        stopReconnect = false;
+        errorDialogVisible.value = false;
         ElMessage.success('TCP 通道已建立');
+      } else if (msg.type === 'status' && msg.status === 'error') {
+        errorMsg.value = msg.msg || 'TCP 连接失败';
+        props.tab.status = 'disconnected';
+        tcpConnected.value = false;
+        scheduleReconnect();
       }
     } catch {}
   };
-  ws.onclose = () => { props.tab.status = 'disconnected'; tcpConnected.value = false; };
+  ws.onclose = () => {
+    if (props.tab.status === 'connected') {
+      errorMsg.value = 'TCP 通道已断开';
+      props.tab.status = 'disconnected';
+      tcpConnected.value = false;
+      scheduleReconnect();
+    } else if (!stopReconnect && reconnectAttempts < 3) {
+      errorMsg.value = 'TCP 通道建立失败';
+      props.tab.status = 'disconnected';
+      tcpConnected.value = false;
+      scheduleReconnect();
+    }
+  };
+  ws.onerror = () => {
+    errorMsg.value = 'TCP 连接发生错误';
+    props.tab.status = 'disconnected';
+    tcpConnected.value = false;
+    scheduleReconnect();
+  };
+}
+
+function scheduleReconnect() {
+  if (stopReconnect) return;
+  if (reconnectAttempts >= 3) {
+    errorDialogVisible.value = true;
+    return;
+  }
+  reconnectAttempts++;
+  clearTimeout(reconnectTimer);
+  reconnectTimer = setTimeout(connect, 3000);
+}
+
+function reconnect() {
+  clearTimeout(reconnectTimer);
+  reconnectAttempts = 0;
+  stopReconnect = false;
+  tcpConnected.value = false;
+  connect();
 }
 
 function testConnect() { reconnect(); }
+
+function onErrorCancel() {
+  stopReconnect = true;
+  try { ws?.close(); } catch {}
+  tcpConnected.value = false;
+  props.tab.status = 'disconnected';
+  emit('close');
+}
+function onErrorContinue() {
+  reconnectAttempts = 0;
+  stopReconnect = false;
+  reconnect();
+}
 
 function downloadRdp() {
   const content = [
@@ -83,7 +166,12 @@ function downloadRdp() {
   ElMessage.success('已下载 .rdp 配置文件');
 }
 
-onBeforeUnmount(() => { try { ws?.close(); } catch {} });
+onMounted(() => { connect(); });
+onBeforeUnmount(() => {
+  stopReconnect = true;
+  clearTimeout(reconnectTimer);
+  try { ws?.close(); } catch {}
+});
 </script>
 
 <style lang="scss" scoped>

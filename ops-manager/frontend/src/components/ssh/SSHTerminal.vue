@@ -93,6 +93,16 @@
       <span class="kb-item"><kbd>Ctrl</kbd>+<kbd>L</kbd> 清屏</span>
       <span class="kb-item"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd> 新建 Tab</span>
     </div>
+
+    <ConnectionErrorDialog
+      v-model="errorDialogVisible"
+      :host-name="tab.hostName"
+      protocol="ssh"
+      :message="errorMsg"
+      :attempts="reconnectAttempts"
+      @cancel="onErrorCancel"
+      @continue="onErrorContinue"
+    />
   </div>
 </template>
 
@@ -108,10 +118,11 @@ import {
   ZoomIn, ZoomOut, RefreshRight, MagicStick, Delete
 } from '@element-plus/icons-vue';
 import SFTPFileManager from '../sftp/SFTPFileManager.vue';
+import ConnectionErrorDialog from '../common/ConnectionErrorDialog.vue';
 import { wsUrl } from '../../api';
 
 const props = defineProps({ tab: { type: Object, required: true } });
-const emit = defineEmits(['set-host']);
+const emit = defineEmits(['set-host', 'close']);
 
 // —— 常量 ——
 const FONT_MIN = 10;
@@ -125,11 +136,14 @@ const fontSize = ref(loadFontSize());
 const warnMsg = ref('');
 const sftpCollapsed = ref(false);
 const fileInput = ref(null);
+const errorDialogVisible = ref(false);
+const errorMsg = ref('');
 let term = null;
 let fitAddon = null;
 let ws = null;
 let reconnectTimer = null;
 let reconnectAttempts = 0;
+let stopReconnect = false;
 
 function loadFontSize() {
   try {
@@ -250,7 +264,9 @@ function applyFont() {
 
 // —— WebSocket 连接 ——
 function connect() {
+  if (stopReconnect) return;
   props.tab.status = 'connecting';
+  errorDialogVisible.value = false;
   const url = `${wsUrl('/ws/ssh')}&hostId=${props.tab.hostId}`;
   try { ws?.close(); } catch {}
   ws = new WebSocket(url);
@@ -262,8 +278,11 @@ function connect() {
     if (msg.type === 'data' && term) term.write(msg.data);
     else if (msg.type === 'status') {
       props.tab.status = msg.status;
-      if (msg.status === 'disconnected' || msg.status === 'error') {
-        ElMessage.error(msg.msg || '连接断开');
+      if (msg.status === 'connected') {
+        reconnectAttempts = 0;
+        stopReconnect = false;
+      } else if (msg.status === 'disconnected' || msg.status === 'error') {
+        errorMsg.value = msg.msg || 'SSH 连接已断开';
         scheduleReconnect();
       }
     } else if (msg.type === 'warn') {
@@ -271,8 +290,21 @@ function connect() {
       setTimeout(() => warnMsg.value = '', 4000);
     } else if (msg.type === 'pong') { /* ping/pong */ }
   };
-  ws.onclose = () => { props.tab.status = 'disconnected'; scheduleReconnect(); };
-  ws.onerror = () => { props.tab.status = 'disconnected'; };
+  ws.onclose = () => {
+    if (props.tab.status === 'connected') {
+      props.tab.status = 'disconnected';
+      errorMsg.value = 'SSH 连接已关闭';
+      scheduleReconnect();
+    } else if (!stopReconnect) {
+      props.tab.status = 'disconnected';
+      errorMsg.value = errorMsg.value || 'SSH 连接失败';
+      scheduleReconnect();
+    }
+  };
+  ws.onerror = () => {
+    props.tab.status = 'disconnected';
+    errorMsg.value = errorMsg.value || 'SSH 连接发生错误';
+  };
 
   // 心跳
   const pingTimer = setInterval(() => {
@@ -282,7 +314,11 @@ function connect() {
 }
 
 function scheduleReconnect() {
-  if (reconnectAttempts >= 3) return;
+  if (stopReconnect) return;
+  if (reconnectAttempts >= 3) {
+    errorDialogVisible.value = true;
+    return;
+  }
   reconnectAttempts++;
   ElMessage.info(`${reconnectAttempts}/3 秒后自动重连...`);
   reconnectTimer = setTimeout(connect, 3000);
@@ -291,7 +327,19 @@ function scheduleReconnect() {
 function reconnect() {
   clearTimeout(reconnectTimer);
   reconnectAttempts = 0;
+  stopReconnect = false;
   connect();
+}
+
+function onErrorCancel() {
+  stopReconnect = true;
+  ws?.close();
+  emit('close');
+}
+function onErrorContinue() {
+  reconnectAttempts = 0;
+  stopReconnect = false;
+  reconnect();
 }
 
 // —— 工具 ——
@@ -385,6 +433,7 @@ onMounted(async () => {
   connect();
 });
 onBeforeUnmount(() => {
+  stopReconnect = true;
   clearTimeout(reconnectTimer);
   ws?.close();
   term?.dispose();

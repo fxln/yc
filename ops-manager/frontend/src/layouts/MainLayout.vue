@@ -77,8 +77,8 @@
         </div>
       </header>
 
-      <!-- 会话 Tab -->
-      <div class="session-tabs">
+      <!-- 会话 Tab：有会话才显示 -->
+      <div class="session-tabs" v-if="tabsStore.tabs.length">
         <el-tabs v-model="tabsStore.activeId" type="card" class="ops-tabs">
           <el-tab-pane v-for="tab in tabsStore.tabs" :key="tab.id" :name="tab.id">
             <template #label>
@@ -95,10 +95,34 @@
 
       <!-- Tab 内容 -->
       <div class="session-body">
-        <SSHTerminal v-if="activeTab && activeTab.type === 'ssh'" :tab="activeTab" @set-host="selectedHost = $event" />
-        <VNCSession v-else-if="activeTab && activeTab.type === 'vnc'" :tab="activeTab" />
-        <RDPSession v-else-if="activeTab && activeTab.type === 'rdp'" :tab="activeTab" />
-        <el-empty v-else description="暂无远程会话，点击主机卡片上的 '连接' 按钮建立新会话" />
+        <SSHTerminal
+          v-if="activeTab && activeTab.type === 'ssh'"
+          :tab="activeTab"
+          @set-host="selectedHost = $event"
+          @close="tabsStore.closeTab(activeTab.id)"
+        />
+        <VNCSession
+          v-else-if="activeTab && activeTab.type === 'vnc'"
+          :tab="activeTab"
+          @close="tabsStore.closeTab(activeTab.id)"
+        />
+        <RDPSession
+          v-else-if="activeTab && activeTab.type === 'rdp'"
+          :tab="activeTab"
+          @close="tabsStore.closeTab(activeTab.id)"
+        />
+        <div v-else class="session-empty">
+          <el-empty description="暂无远程会话">
+            <template #image>
+              <div style="font-size:64px">🖥️</div>
+            </template>
+            <template #description>
+              <div style="color:var(--ops-text-2)">暂无远程会话</div>
+              <div style="color:var(--ops-text-3);font-size:12px;margin-top:4px">从左侧主机树或主机管理页点击「连接」开始</div>
+            </template>
+            <el-button type="primary" @click="router.push('/hosts')">去主机管理</el-button>
+          </el-empty>
+        </div>
       </div>
     </section>
   </div>
@@ -115,6 +139,7 @@ import HostDetail from '../components/common/HostDetail.vue';
 import SSHTerminal from '../components/ssh/SSHTerminal.vue';
 import VNCSession from '../components/vnc/VNCSession.vue';
 import RDPSession from '../components/rdp/RDPSession.vue';
+import ConnectionErrorDialog from '../components/common/ConnectionErrorDialog.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -251,5 +276,9 @@ defineEmits(['refresh-hosts', 'add-group']);
     &.disconnected{ color: var(--accent-pink); }
   }
   .session-body { flex: 1; overflow: hidden; }
+  .session-empty {
+    height: 100%; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, var(--ops-bg) 0%, rgba(88,166,255,.03) 100%);
+  }
 }
 </style>
