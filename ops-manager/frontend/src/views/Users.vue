@@ -47,6 +47,7 @@ import { ref, computed, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useUserStore } from '../stores/user';
 import { userApi } from '../api';
+import { Plus } from '@element-plus/icons-vue';
 
 const userStore = useUserStore();
 const users = ref([]);
@@ -57,7 +58,7 @@ const filtered = computed(() => users.value.filter((u) => u.username.includes(ke
 function roleLabel(r) { return { admin: '管理员', user: '运维用户', readonly: '只读用户' }[r]; }
 function roleTag(r) {
   // 角色 tag 映射到全局 el-tag 类型 —— admin=粉(danger 红) / user=蓝(primary) / readonly=青(info)
-  return { admin: 'danger', user: '', readonly: 'info' }[r];
+  return { admin: 'danger', user: 'primary', readonly: 'info' }[r];
 }
 
 async function load() { users.value = (await userApi.list()).data || []; }

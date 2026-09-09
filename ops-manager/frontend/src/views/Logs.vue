@@ -49,6 +49,7 @@ import { ref, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useUserStore } from '../stores/user';
 import { logApi } from '../api';
+import { Search, Delete } from '@element-plus/icons-vue';
 
 const userStore = useUserStore();
 const list = ref([]);

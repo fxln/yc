@@ -65,6 +65,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { webdavApi } from '../api';
+import { Plus } from '@element-plus/icons-vue';
 
 const accounts = ref([]);
 const dialogVisible = ref(false);

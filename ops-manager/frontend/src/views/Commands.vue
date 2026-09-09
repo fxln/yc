@@ -78,6 +78,7 @@ import { ref, computed, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useUserStore } from '../stores/user';
 import { commandApi } from '../api';
+import { Search, Plus, Upload, Download, Delete, Star, StarFilled } from '@element-plus/icons-vue';
 
 const userStore = useUserStore();
 

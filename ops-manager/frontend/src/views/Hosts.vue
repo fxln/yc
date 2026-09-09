@@ -68,6 +68,7 @@ import { useTabsStore } from '../stores/tabs';
 import { useUserStore } from '../stores/user';
 import { hostApi } from '../api';
 import HostFormDialog from '../components/common/HostFormDialog.vue';
+import { Search, Plus, Upload, Download, Delete } from '@element-plus/icons-vue';
 
 const userStore = useUserStore();
 const tabsStore = useTabsStore();
