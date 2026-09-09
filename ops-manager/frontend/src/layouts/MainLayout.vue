@@ -11,8 +11,8 @@
           class="dark-menu"
           @select="onMenuSelect"
         >
-          <el-menu-item index="dashboard"><el-icon><Monitor /></el-icon><span>主机总览</span></el-menu-item>
-          <el-menu-item index="hosts"><el-icon><Server /></el-icon><span>主机管理</span></el-menu-item>
+          <el-menu-item index="dashboard"><el-icon><Histogram /></el-icon><span>主机总览</span></el-menu-item>
+          <el-menu-item index="hosts"><el-icon><Monitor /></el-icon><span>主机管理</span></el-menu-item>
           <el-menu-item index="commands"><el-icon><Promotion /></el-icon><span>快捷命令仓库</span></el-menu-item>
           <el-menu-item v-if="userStore.isAdmin" index="users"><el-icon><User /></el-icon><span>用户管理</span></el-menu-item>
           <el-menu-item v-if="userStore.isAdmin" index="webdav"><el-icon><Connection /></el-icon><span>WebDAV 设置</span></el-menu-item>
@@ -39,7 +39,7 @@
               <span class="node-label">
                 <el-icon v-if="data.isGroup"><Folder /></el-icon>
                 <el-icon v-else :class="data.status === 'online' ? 'online' : 'offline'">
-                  <Monitor />
+                  <Histogram />
                 </el-icon>
                 {{ node.label }}
               </span>
@@ -83,7 +83,7 @@
           <el-tab-pane v-for="tab in tabsStore.tabs" :key="tab.id" :name="tab.id">
             <template #label>
               <span class="tab-label">
-                <el-icon><component :is="tab.type === 'ssh' ? 'Monitor' : tab.type === 'vnc' ? 'Picture' : 'Link'" /></el-icon>
+                <el-icon><component :is="tab.type === 'ssh' ? 'Histogram' : tab.type === 'vnc' ? 'Picture' : 'Connection'" /></el-icon>
                 {{ tab.hostName }}
                 <span class="tab-status" :class="tab.status" :title="tab.msg">{{ tab.status === 'connected' ? '●' : tab.status === 'connecting' ? '◌' : '✖' }}</span>
                 <el-icon class="close-tab" @click.stop="tabsStore.closeTab(tab.id)"><Close /></el-icon>
