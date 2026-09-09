@@ -1,0 +1,30 @@
+{
+  "name": "ops-manager-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web远程运维管理系统前端",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "@novnc/novnc": "^1.5.0",
+    "axios": "^1.7.7",
+    "element-plus": "^2.8.6",
+    "pinia": "^2.2.4",
+    "vue": "^3.5.12",
+    "vue-router": "^4.4.5",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0",
+    "xterm-addon-web-links": "^0.9.0",
+    "xterm-addon-search": "^0.13.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "sass": "^1.79.3",
+    "vite": "^5.4.8"
+  }
+}

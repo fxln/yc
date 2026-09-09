@@ -1,0 +1,105 @@
+/**
+ * 暗色运维主题 - 全局 SCSS
+ * 覆盖 Element Plus 默认颜色
+ */
+:root {
+  --ops-bg: #0d1117;
+  --ops-bg-secondary: #161b22;
+  --ops-bg-tertiary: #21262d;
+  --ops-border: #30363d;
+  --ops-text: #c9d1d9;
+  --ops-text-secondary: #8b949e;
+  --ops-primary: #388bfd;
+  --ops-primary-hover: #58a6ff;
+  --ops-success: #3fb950;
+  --ops-warning: #d29922;
+  --ops-danger: #f85149;
+  --ops-info: #58a6ff;
+}
+
+html, body {
+  background: var(--ops-bg) !important;
+  color: var(--ops-text);
+}
+
+/* Element Plus 暗色覆盖 */
+.el-menu--dark {
+  background: var(--ops-bg-secondary) !important;
+  border-right: 1px solid var(--ops-border) !important;
+  .el-menu-item, .el-sub-menu__title {
+    color: var(--ops-text-secondary) !important;
+    &:hover { background: var(--ops-bg-tertiary) !important; color: var(--ops-text) !important; }
+  }
+  .el-menu-item.is-active { background: var(--ops-primary) !important; color: #fff !important; }
+}
+
+.el-card {
+  background: var(--ops-bg-secondary) !important;
+  border-color: var(--ops-border) !important;
+  color: var(--ops-text) !important;
+}
+
+.el-table {
+  background: var(--ops-bg-secondary) !important;
+  --el-table-bg-color: var(--ops-bg-secondary);
+  --el-table-tr-bg-color: var(--ops-bg-secondary);
+  --el-table-header-bg-color: var(--ops-bg-tertiary);
+  --el-table-row-hover-bg-color: #21262d;
+  --el-table-border-color: var(--ops-border);
+  color: var(--ops-text);
+}
+
+.el-dialog, .el-drawer {
+  background: var(--ops-bg-secondary) !important;
+  color: var(--ops-text) !important;
+}
+
+.el-input__wrapper, .el-textarea__inner, .el-select__wrapper, .el-select .el-input__wrapper {
+  background: var(--ops-bg-tertiary) !important;
+  box-shadow: 0 0 0 1px var(--ops-border) inset !important;
+  color: var(--ops-text) !important;
+  &:hover, &.is-focus { box-shadow: 0 0 0 1px var(--ops-primary) inset !important; }
+}
+
+.el-button {
+  --el-button-bg-color: var(--ops-bg-tertiary);
+  --el-button-border-color: var(--ops-border);
+  --el-button-text-color: var(--ops-text);
+}
+
+.el-pagination {
+  --el-pagination-hover-color: var(--ops-primary-hover);
+  .is-active { background: var(--ops-primary) !important; }
+}
+
+.el-tabs {
+  --el-tabs-tab-font-size: 13px;
+  .el-tabs__item { color: var(--ops-text-secondary); &.is-active { color: var(--ops-primary-hover); } }
+  .el-tabs__active-bar { background-color: var(--ops-primary); }
+  .el-tabs__nav-wrap::after { background-color: var(--ops-border); }
+}
+
+.el-tag { border: none; }
+
+.el-tree {
+  background: transparent !important;
+  color: var(--ops-text) !important;
+  .el-tree-node__content {
+    &:hover { background: var(--ops-bg-tertiary); }
+  }
+}
+
+.el-scrollbar__thumb { background: var(--ops-border); }
+
+.el-empty { color: var(--ops-text-secondary); }
+
+.el-form-item__label { color: var(--ops-text) !important; }
+
+/* 通用布局 */
+.ops-shell {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background: var(--ops-bg);
+  overflow: hidden;
+}

@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# 前端构建产物（Docker 构建时会在容器内重新 build）
+frontend/dist
+frontend/.vite
+
+# 后端本地数据（不要打进镜像）
+backend/data/db/*
+backend/data/logs/*
+backend/data/webdav/*
+backend/data/ssh_keys/*
+!backend/data/db/.gitkeep
+!backend/data/logs/.gitkeep
+!backend/data/webdav/.gitkeep
+
+# 编辑器
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+
+# 环境文件
+.env
+.env.local
