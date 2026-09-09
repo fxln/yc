@@ -1,14 +1,14 @@
 <template>
   <div class="webdav-page">
-    <el-card>
+    <el-card class="accent-green">
       <div class="desc">
-        <p>内置 WebDAV 服务端口：<el-tag>8081</el-tag>（可通过环境变量 WEBDAV_PORT 修改）</p>
-        <p>存储根目录：<code>/data/webdav</code>（Docker Volume 已挂载，数据持久化）</p>
-        <p>第三方客户端连接示例：<code>http://your-server-ip:8081/</code></p>
+        <p>📦 内置 WebDAV 服务端口：<el-tag type="info">8081</el-tag>（可通过环境变量 WEBDAV_PORT 修改）</p>
+        <p>📁 存储根目录：<code>/data/webdav</code>（Docker Volume 已挂载，数据持久化）</p>
+        <p>🔗 第三方客户端连接示例：<code>http://your-server-ip:8081/</code></p>
       </div>
     </el-card>
 
-    <el-card class="table-card">
+    <el-card class="accent-pink" style="margin-top:16px">
       <template #header>
         <div class="card-header">
           <span>WebDAV 账号</span>
@@ -112,7 +112,6 @@ onMounted(load);
 
 <style lang="scss" scoped>
 .webdav-page { padding: 16px; }
-.table-card { margin-top: 16px; }
 .card-header { display: flex; justify-content: space-between; align-items: center; }
-.desc p { margin: 4px 0; font-size: 13px; color: var(--ops-text-secondary); }
+.desc p { margin: 4px 0; font-size: 13px; color: var(--ops-text-2); }
 </style>

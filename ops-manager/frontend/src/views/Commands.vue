@@ -1,6 +1,6 @@
 <template>
   <div class="commands-page">
-    <el-card class="filter-card">
+    <el-card class="accent-purple">
       <div class="filter-row">
         <el-input v-model="filters.keyword" placeholder="搜索名称/内容/描述" clearable style="width:260px" :prefix-icon="Search" />
         <el-select v-model="filters.os" placeholder="适用系统" clearable style="width:120px">
@@ -16,7 +16,7 @@
       </div>
     </el-card>
 
-    <el-card class="table-card">
+    <el-card class="accent-cyan" style="margin-top:16px">
       <el-table :data="commands" size="default" stripe>
         <el-table-column type="selection" width="44" v-if="userStore.isAdmin" />
         <el-table-column label="收藏" width="70">
@@ -131,8 +131,8 @@ async function toggleFav(row) {
 
 function previewCmd(row) {
   ElMessageBox.alert(
-    `<div style="font-family:Menlo,Consolas,monospace;background:#0d1117;color:#c9d1d9;padding:12px;border-radius:6px;white-space:pre-wrap;word-break:break-all;">${row.content}</div>
-     ${hasVars(row.content) ? '<div style="margin-top:8px;color:#d29922;font-size:12px;">⚠ 包含变量占位符，执行时会弹出参数填写框</div>' : ''}`,
+    `<div style="font-family:Menlo,Consolas,monospace;background:#0d1117;color:#c9d1d9;padding:12px;border-radius:6px;white-space:pre-wrap;word-break:break-all;border-left:3px solid #58a6ff;">${row.content}</div>
+     ${hasVars(row.content) ? '<div style="margin-top:8px;color:#ffa657;font-size:12px;">⚠ 包含变量占位符，执行时会弹出参数填写框</div>' : ''}`,
     row.name, { dangerouslyUseHTMLString: true }
   );
 }
@@ -161,5 +161,4 @@ onMounted(load);
 <style lang="scss" scoped>
 .commands-page { padding: 16px; }
 .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.table-card { margin-top: 16px; }
 </style>

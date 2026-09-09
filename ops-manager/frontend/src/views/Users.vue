@@ -1,13 +1,13 @@
 <template>
   <div class="users-page">
-    <el-card class="filter-card">
+    <el-card class="accent-orange">
       <div class="filter-row">
         <el-input v-model="keyword" placeholder="搜索账号" clearable style="width:260px" />
         <el-button type="primary" :icon="Plus" @click="onAdd">新增用户</el-button>
       </div>
     </el-card>
 
-    <el-card class="table-card">
+    <el-card class="accent-blue" style="margin-top:16px">
       <el-table :data="filtered" size="default" stripe>
         <el-table-column prop="username" label="账号" width="140" />
         <el-table-column label="角色" width="120">
@@ -55,7 +55,10 @@ const keyword = ref('');
 const filtered = computed(() => users.value.filter((u) => u.username.includes(keyword.value)));
 
 function roleLabel(r) { return { admin: '管理员', user: '运维用户', readonly: '只读用户' }[r]; }
-function roleTag(r) { return { admin: 'danger', user: 'primary', readonly: 'info' }[r]; }
+function roleTag(r) {
+  // 角色 tag 映射到全局 el-tag 类型 —— admin=粉(danger 红) / user=蓝(primary) / readonly=青(info)
+  return { admin: 'danger', user: '', readonly: 'info' }[r];
+}
 
 async function load() { users.value = (await userApi.list()).data || []; }
 
@@ -96,5 +99,4 @@ onMounted(load);
 <style lang="scss" scoped>
 .users-page { padding: 16px; }
 .filter-row { display: flex; gap: 10px; align-items: center; }
-.table-card { margin-top: 16px; }
 </style>

@@ -131,15 +131,21 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .vnc-wrapper { height: 100%; display: flex; flex-direction: column; background: #000; }
-.vnc-toolbar {
+/* vnc-wrapper 用 #000 正确 —— noVNC canvas 本身就是黑色 */
+
+/* .vnc-toolbar 全局样式已在 theme.scss（粉紫渐变 + accent-pink 下边框），
+   这里只补充专属子元素细节 */
+:deep(.vnc-toolbar) {
   height: 40px; padding: 0 12px; display: flex; justify-content: space-between; align-items: center;
-  background: #161b22; border-bottom: 1px solid var(--ops-border);
-  .host-info { font-size: 13px; font-weight: 600; color: var(--ops-primary-hover); }
+  .host-info { font-size: 13px; font-weight: 700; color: var(--accent-purple); }
   .tools { display: flex; align-items: center; gap: 8px; }
 }
+
 .vnc-stage { flex: 1; position: relative; overflow: hidden; background: #000; }
 .vnc-loading {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  color: #8b949e; display: flex; gap: 8px; align-items: center; font-size: 13px;
+  color: var(--accent-purple); display: flex; gap: 8px; align-items: center; font-size: 13px;
+  background: rgba(13,17,23,.85); padding: 10px 16px; border-radius: 8px;
+  backdrop-filter: blur(4px);
 }
 </style>

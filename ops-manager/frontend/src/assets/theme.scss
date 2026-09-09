@@ -386,3 +386,15 @@ mark {
   padding: 0 3px;
   border-radius: 3px;
 }
+
+/* =============== 动态弹窗 input（SSH 变量输入） =============== */
+.ssh-input-vars {
+  flex: 1;
+  background: var(--ops-bg-3);
+  border: 1px solid var(--ops-border);
+  color: var(--ops-text);
+  padding: 6px 10px;
+  border-radius: 4px;
+  outline: none;
+  &:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(88,166,255,.2); }
+}

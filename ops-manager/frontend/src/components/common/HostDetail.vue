@@ -2,13 +2,19 @@
   <div class="host-detail">
     <div class="detail-header">
       <h3>{{ host.name }}</h3>
-      <span class="status" :class="host.status"><i class="dot" />{{ host.status === 'online' ? '在线' : host.status === 'connecting' ? '连接中' : '离线' }}</span>
+      <span class="status-dot" :class="host.status">
+        <i class="dot" />{{ host.status === 'online' ? '在线' : host.status === 'connecting' ? '连接中' : '离线' }}
+      </span>
     </div>
     <div class="detail-item"><span class="label">IP</span><span>{{ host.ip }}:{{ host.port }}</span></div>
-    <div class="detail-item"><span class="label">协议</span><el-tag size="small">{{ host.protocol?.toUpperCase() }}</el-tag></div>
+    <div class="detail-item">
+      <span class="label">协议</span>
+      <el-tag size="small" :class="`protocol-${host.protocol}`">{{ host.protocol?.toUpperCase() }}</el-tag>
+    </div>
     <div class="detail-item"><span class="label">账号</span><span>{{ host.username || '-' }}</span></div>
     <div class="detail-item" v-if="host.remark"><span class="label">备注</span><span>{{ host.remark }}</span></div>
-    <div class="detail-item" v-if="host.tags"><span class="label">标签</span>
+    <div class="detail-item" v-if="safeTags.length">
+      <span class="label">标签</span>
       <el-tag v-for="t in safeTags" :key="t" size="small" type="info" style="margin-right:4px">{{ t }}</el-tag>
     </div>
 
@@ -16,13 +22,13 @@
       <el-button type="primary" size="small" :disabled="host.protocol === 'vnc' && host.status !== 'online'" @click="connect">
         <el-icon><Link /></el-icon> 连接
       </el-button>
-      <el-button size="small" @click="$emit('edit', host)" v-if="canEdit">编辑</el-button>
-      <el-button size="small" type="danger" @click="$emit('remove', host)" v-if="canEdit">删除</el-button>
+      <el-button type="info" size="small" @click="$emit('edit', host)" v-if="canEdit">编辑</el-button>
+      <el-button type="danger" size="small" @click="$emit('remove', host)" v-if="canEdit">删除</el-button>
     </div>
 
     <!-- 快捷命令面板 -->
     <div class="quick-cmds">
-      <div class="qc-title">快捷命令</div>
+      <div class="qc-title">⚡ 快捷命令</div>
       <div class="qc-list">
         <div v-for="cmd in commands" :key="cmd.id" class="qc-item" @click="sendCommand(cmd)" :title="cmd.content">
           {{ cmd.name }}
@@ -83,7 +89,6 @@ function sendCommand(cmd) {
     ElMessage.info('已打开 SSH 会话，请稍后再发送命令');
     return;
   }
-  // 触发组件发送命令（通过事件总线式：设置 tab 的 commandToSend）
   tab.commandToSend = { ...cmd, ts: Date.now() };
   emit('send-command', cmd);
 }
@@ -93,18 +98,34 @@ onMounted(loadCmds);
 
 <style lang="scss" scoped>
 .host-detail { padding: 16px; }
-.detail-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
-  h3 { margin: 0; font-size: 16px; }
-  .status { font-size: 12px; display: flex; align-items: center; gap: 4px; &.online { color: var(--ops-success); } &.offline { color: var(--ops-text-secondary); } &.connecting { color: var(--ops-warning); }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; } }
+
+.detail-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--ops-border-soft);
+  h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--accent-blue); }
 }
-.detail-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px;
-  .label { color: var(--ops-text-secondary); min-width: 48px; } }
+
+/* 状态徽章样式已收归全局 .status-dot —— 不再重写 */
+
+.detail-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; font-size: 13px;
+  .label { color: var(--accent-cyan); min-width: 48px; font-weight: 500; }
+}
+
 .action-group { margin-top: 16px; display: flex; gap: 8px; }
-.quick-cmds { margin-top: 20px; border-top: 1px solid var(--ops-border); padding-top: 12px; }
-.qc-title { font-size: 12px; color: var(--ops-text-secondary); margin-bottom: 8px; }
-.qc-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-.qc-item { background: var(--ops-bg-tertiary); border: 1px solid var(--ops-border); padding: 4px 10px; border-radius: 4px;
-  font-size: 12px; cursor: pointer; &:hover { border-color: var(--ops-primary); color: var(--ops-primary-hover); } }
-.qc-empty { color: var(--ops-text-secondary); font-size: 12px; }
+
+.quick-cmds {
+  margin-top: 20px; padding-top: 14px;
+  border-top: 1px dashed var(--ops-border);
+  .qc-title {
+    font-size: 12px; font-weight: 700; letter-spacing: 1px;
+    color: var(--accent-purple); text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .qc-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  /* qc-item 样式已收归全局 theme.scss 中运维专属组件区 */
+  .qc-empty { color: var(--ops-text-3); font-size: 12px; padding: 6px 0; }
+}
 </style>

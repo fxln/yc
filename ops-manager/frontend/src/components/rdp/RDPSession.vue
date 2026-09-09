@@ -90,11 +90,16 @@ onBeforeUnmount(() => { try { ws?.close(); } catch {} });
 .rdp-wrapper { height: 100%; display: flex; flex-direction: column; background: var(--ops-bg); }
 .rdp-toolbar {
   height: 40px; padding: 0 12px; display: flex; justify-content: space-between; align-items: center;
-  background: #161b22; border-bottom: 1px solid var(--ops-border);
-  .host-info { font-size: 13px; font-weight: 600; color: var(--ops-primary-hover); }
+  /* TCP 通道：使用橙色工具栏（对应 accent-orange = TCP 协议色） */
+  background: linear-gradient(90deg, rgba(255,166,87,0.10) 0%, rgba(219,109,40,0.10) 100%);
+  border-bottom: 1px solid var(--accent-orange);
+  .host-info { font-size: 13px; font-weight: 700; color: var(--accent-orange); }
 }
 .rdp-body { padding: 24px; flex: 1; overflow: auto; }
-.tcp-info { margin-top: 20px; padding: 16px; background: var(--ops-bg-secondary); border: 1px solid var(--ops-border); border-radius: 6px;
+.tcp-info {
+  margin-top: 20px; padding: 16px; background: var(--ops-bg-2);
+  border: 1px solid var(--ops-border); border-radius: 8px;
+  border-left: 3px solid var(--accent-orange);
   div { margin-bottom: 6px; font-size: 13px; }
 }
 .connect-actions { margin-top: 20px; display: flex; gap: 10px; }

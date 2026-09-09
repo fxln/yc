@@ -8,9 +8,6 @@
       <div class="sidebar-menu">
         <el-menu
           :default-active="activeMenu"
-          background-color="#161b22"
-          text-color="#8b949e"
-          active-text-color="#fff"
           class="dark-menu"
           @select="onMenuSelect"
         >
@@ -46,8 +43,8 @@
                 </el-icon>
                 {{ node.label }}
               </span>
-              <span v-if="!data.isGroup" class="node-status" :class="data.status">
-                <i class="dot" />{{ data.status === 'online' ? '在线' : '离线' }}
+              <span v-if="!data.isGroup" class="status-dot" :class="data.status">
+                <i class="dot" />{{ data.status === 'online' ? '在线' : data.status === 'connecting' ? '连接中' : '离线' }}
               </span>
             </div>
           </template>
@@ -183,42 +180,76 @@ defineEmits(['refresh-hosts', 'add-group']);
 
 <style lang="scss" scoped>
 .ops-shell {
+  display: flex;
+  height: 100vh;
+  background: var(--ops-bg);
+
   .sidebar {
     width: 240px;
-    background: #161b22;
+    background: var(--ops-bg-2);
     border-right: 1px solid var(--ops-border);
     display: flex; flex-direction: column;
     flex-shrink: 0;
   }
-  .sidebar-header { padding: 14px 16px; border-bottom: 1px solid var(--ops-border); .logo { font-weight: 700; color: var(--ops-primary-hover); font-size: 15px; } }
-  .sidebar-menu { border-right: none; .dark-menu { border-right: none; } }
-  .host-tree { flex: 1; overflow: auto; border-top: 1px solid var(--ops-border); }
-  .tree-title { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; font-size: 12px; color: var(--ops-text-secondary); }
-  .tree-node { flex: 1; display: flex; justify-content: space-between; align-items: center; font-size: 13px;
-    .node-label { display: flex; gap: 6px; align-items: center; .online { color: var(--ops-success); } .offline { color: var(--ops-text-secondary); } }
-    .node-status { font-size: 11px; color: var(--ops-text-secondary); display: flex; align-items: center; gap: 3px;
-      .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
-      &.online { color: var(--ops-success); } &.offline { color: var(--ops-text-secondary); } }
+  .sidebar-header {
+    padding: 16px; border-bottom: 1px solid var(--ops-border);
+    .logo {
+      font-weight: 800; font-size: 16px;
+      background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+  }
+  .sidebar-menu { border-right: none; }
+  .host-tree { flex: 1; overflow: auto; border-top: 1px solid var(--ops-border-soft); }
+  .tree-title {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 14px; font-size: 12px;
+    color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .tree-node {
+    flex: 1; display: flex; justify-content: space-between; align-items: center; font-size: 13px;
+    padding: 3px 6px; border-radius: 4px;
+    .node-label {
+      display: flex; gap: 6px; align-items: center;
+      .online  { color: var(--accent-green); }
+      .offline { color: var(--ops-text-3); }
+      .folder  { color: var(--accent-orange); }
+    }
+    :deep(.el-tree-node__content:hover) { background: var(--ops-bg-3); }
   }
 
   .center-panel {
-    width: 320px; flex-shrink: 0; background: var(--ops-bg-secondary);
+    width: 300px; flex-shrink: 0; background: var(--ops-bg-2);
     border-right: 1px solid var(--ops-border); overflow: auto;
-    &.empty { display: flex; align-items: center; justify-content: center; }
+    &.empty {
+      display: flex; align-items: center; justify-content: center;
+      .el-empty { color: var(--ops-text-3); }
+    }
   }
 
   .main-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; }
   .top-bar {
     height: 42px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between;
-    background: var(--ops-bg-secondary); border-bottom: 1px solid var(--ops-border);
-    .close-all { color: var(--ops-text-secondary); cursor: pointer; &:hover { color: var(--ops-danger); } }
+    background: linear-gradient(180deg, var(--ops-bg-2) 0%, var(--ops-bg) 100%);
+    border-bottom: 1px solid var(--ops-border-soft);
+    .close-all { color: var(--accent-pink); cursor: pointer; &:hover { color: var(--ops-danger); transform: scale(1.15); } transition: transform .12s; }
     .user-info { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ops-text); }
   }
-  .session-tabs { background: var(--ops-bg); padding: 0 8px; border-bottom: 1px solid var(--ops-border); }
-  .ops-tabs { height: 36px; :deep(.el-tabs__nav-wrap::after) { height: 0; } }
-  .tab-label { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
-  .tab-status { &.connecting { color: var(--ops-warning); } &.connected { color: var(--ops-success); } &.disconnected { color: var(--ops-danger); } }
-  .close-tab { margin-left: 4px; border-radius: 50%; &:hover { background: var(--ops-danger); color: #fff; } }
+  .session-tabs { background: var(--ops-bg); padding: 0 8px; border-bottom: 1px solid var(--ops-border-soft); }
+  .ops-tabs { height: 38px; :deep(.el-tabs__nav-wrap::after) { height: 0; } }
+  .tab-label {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 12px;
+    .close-tab { border-radius: 50%; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;
+      transition: all .12s; &:hover { background: var(--ops-danger); color: #fff; } }
+  }
+  /* 会话状态小圆点：直接用全局 .status-dot 已定义，这里只处理 tab 里的原始标记版本 */
+  .tab-status {
+    font-size: 10px;
+    &.connected   { color: var(--accent-green); }
+    &.connecting  { color: var(--accent-orange); animation: pulse 1.2s ease-in-out infinite; }
+    &.disconnected{ color: var(--accent-pink); }
+  }
   .session-body { flex: 1; overflow: hidden; }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="hosts-page">
     <!-- 搜索和操作栏 -->
-    <el-card class="filter-card">
+    <el-card class="accent-blue">
       <div class="filter-row">
         <el-input v-model="filters.keyword" placeholder="搜索名称/IP/备注" clearable style="width:260px" :prefix-icon="Search" />
         <el-select v-model="filters.protocol" placeholder="协议" clearable style="width:120px">
@@ -15,7 +15,7 @@
           <el-option label="离线" value="offline" />
         </el-select>
         <el-button type="primary" :icon="Plus" @click="onAdd">新增主机</el-button>
-        <el-button :icon="Upload" @click="triggerImport">导入 JSON</el-button>
+        <el-button type="info" :icon="Upload" @click="triggerImport">导入 JSON</el-button>
         <input type="file" ref="importInput" style="display:none" accept=".json" @change="onImport" />
         <el-button :icon="Download" @click="onExport" v-if="userStore.isAdmin">导出</el-button>
         <el-button type="danger" :icon="Delete" :disabled="!selected.length" @click="onBatchDelete" v-if="userStore.isAdmin">批量删除 ({{ selected.length }})</el-button>
@@ -23,7 +23,7 @@
     </el-card>
 
     <!-- 主机列表 -->
-    <el-card class="table-card">
+    <el-card class="accent-cyan" style="margin-top:16px">
       <el-table :data="hosts" @selection-change="selected = $event" size="default" stripe>
         <el-table-column type="selection" width="44" v-if="userStore.isAdmin" />
         <el-table-column label="状态" width="70">
@@ -147,7 +147,6 @@ onMounted(load);
 <style lang="scss" scoped>
 .hosts-page { padding: 16px; }
 .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.status-dot { display: flex; align-items: center; gap: 4px; font-size: 11px; &.online { color: var(--ops-success); } &.offline { color: var(--ops-text-secondary); } &.connecting { color: var(--ops-warning); }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; } }
-.table-card { margin-top: 16px; }
+/* 状态徽章、协议 tag 样式已统一收归 theme.scss（.status-dot / .protocol-xxx），
+   这里不要再定义 —— 否则会和全局冲突 */
 </style>

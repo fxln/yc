@@ -222,8 +222,8 @@ onMounted(loadDir);
 </script>
 
 <style lang="scss" scoped>
-.sftp-manager { height: 100%; background: var(--ops-bg-secondary); position: relative; display: flex; flex-direction: column; }
-.path-bar { padding: 8px 10px; font-size: 12px; color: var(--ops-text-secondary); border-bottom: 1px solid var(--ops-border); display: flex; gap: 2px; flex-wrap: wrap;
+.sftp-manager { height: 100%; background: var(--ops-bg-2); position: relative; display: flex; flex-direction: column; }
+.path-bar { padding: 8px 10px; font-size: 12px; color: var(--ops-text-2); border-bottom: 1px solid var(--ops-border); display: flex; gap: 2px; flex-wrap: wrap;
   .clickable { color: var(--ops-primary); cursor: pointer; &:hover { text-decoration: underline; } } }
 .file-toolbar { padding: 6px 8px; border-bottom: 1px solid var(--ops-border); display: flex; gap: 6px; }
 .file-list { flex: 1; overflow: auto; padding: 4px; }
@@ -232,17 +232,17 @@ onMounted(loadDir);
   gap: 8px; padding: 6px 10px; border-radius: 4px; font-size: 12px; cursor: pointer;
   &:hover { background: var(--ops-bg-tertiary); }
   &.selected { background: var(--ops-bg-tertiary); border: 1px solid var(--ops-primary); }
-  .icon { font-size: 16px; color: var(--ops-text-secondary); }
+  .icon { font-size: 16px; color: var(--ops-text-2); }
   .directory .icon { color: var(--ops-warning); }
   .directory .name { font-weight: 500; }
   .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .size, .time { color: var(--ops-text-secondary); font-size: 11px; }
+  .size, .time { color: var(--ops-text-2); font-size: 11px; }
   .actions { display: flex; gap: 2px; }
 }
-.loading, .empty { padding: 20px; text-align: center; color: var(--ops-text-secondary); font-size: 12px; }
-.drop-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(56,139,253,0.15); border: 2px dashed var(--ops-primary); padding: 20px 40px; border-radius: 8px; color: var(--ops-primary-hover); }
+.loading, .empty { padding: 20px; text-align: center; color: var(--ops-text-2); font-size: 12px; }
+.drop-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(56,139,253,0.15); border: 2px dashed var(--ops-primary); padding: 20px 40px; border-radius: 8px; color: var(--accent-blue); }
 .upload-progress { padding: 8px 10px; border-top: 1px solid var(--ops-border); background: var(--ops-bg); }
 .progress-bar { height: 4px; background: var(--ops-bg-tertiary); border-radius: 2px; overflow: hidden; }
 .progress-fill { height: 100%; background: var(--ops-primary); transition: width .2s; }
-.progress-text { font-size: 11px; color: var(--ops-text-secondary); margin-top: 4px; }
+.progress-text { font-size: 11px; color: var(--ops-text-2); margin-top: 4px; }
 </style>

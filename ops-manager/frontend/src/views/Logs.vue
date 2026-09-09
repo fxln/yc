@@ -1,6 +1,6 @@
 <template>
   <div class="logs-page">
-    <el-card class="filter-card">
+    <el-card class="accent-pink">
       <div class="filter-row">
         <el-input v-model="filters.keyword" placeholder="搜索用户名/主机/详情" clearable style="width:260px" :prefix-icon="Search" />
         <el-select v-model="filters.action" placeholder="操作类型" clearable style="width:140px">
@@ -12,23 +12,26 @@
       </div>
     </el-card>
 
-    <el-card class="table-card">
+    <el-card class="accent-blue" style="margin-top:16px">
       <el-table :data="list" size="default" stripe>
         <el-table-column prop="created_at" label="时间" width="170" />
         <el-table-column prop="username" label="用户" width="100" />
         <el-table-column prop="host_name" label="主机" width="140" />
-        <el-table-column prop="protocol" label="协议" width="80">
-          <template #default="{ row }"><el-tag size="small">{{ row.protocol || '-' }}</el-tag></template>
+        <el-table-column prop="protocol" label="协议" width="90">
+          <template #default="{ row }">
+            <el-tag size="small" :class="`protocol-${row.protocol || 'tcp'}`">{{ (row.protocol || '-').toUpperCase() }}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column prop="action" label="操作" width="140">
           <template #default="{ row }">
             <el-tag :type="actionTag(row.action)" size="small">{{ row.action }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column prop="status" label="状态" width="90">
           <template #default="{ row }">
-            <el-tag v-if="row.status === 'success'" type="success" size="small">成功</el-tag>
-            <el-tag v-else type="danger" size="small">失败</el-tag>
+            <span :class="row.status === 'fail' ? 'log-fail' : 'log-success'" style="font-weight:600">
+              {{ row.status === 'success' ? '✅ 成功' : '❌ 失败' }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column prop="detail" label="详情" show-overflow-tooltip />
@@ -92,5 +95,5 @@ onMounted(load);
 <style lang="scss" scoped>
 .logs-page { padding: 16px; }
 .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.table-card { margin-top: 16px; }
+/* 审计状态文字色：log-success / log-fail 已收归 theme.scss */
 </style>

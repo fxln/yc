@@ -24,7 +24,7 @@
         <div ref="termRef" class="xterm-host" />
         <!-- 危险命令告警 -->
         <div class="warn-toast" v-if="warnMsg">
-          <el-icon color="#f85149"><Warning /></el-icon> {{ warnMsg }}
+          <el-icon style="color:var(--ops-danger)"><Warning /></el-icon> {{ warnMsg }}
         </div>
       </div>
       <!-- SFTP 文件管理器（可折叠） -->
@@ -208,7 +208,7 @@ function openVarDialog(names) {
         return h('div', null, names.map((n) => h('div', { style: 'margin-bottom:10px;display:flex;align-items:center;gap:8px;' }, [
           h('span', { style: 'min-width:80px' }, n + ':'),
           h('input', {
-            style: 'flex:1;background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 10px;border-radius:4px;outline:none;',
+            class: 'ssh-input-vars',
             placeholder: `请输入 ${n}`,
             onInput: (e) => { values[n] = e.target.value; }
           })
@@ -243,28 +243,34 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-.ssh-wrapper { height: 100%; display: flex; flex-direction: column; background: #0d1117; }
-.ssh-toolbar {
+.ssh-wrapper { height: 100%; display: flex; flex-direction: column; background: var(--ops-bg); }
+
+/* .ssh-toolbar 全局样式已在 theme.scss 中定义（紫蓝渐变 + accent-purple 下边框）
+   这里只补充 SSH 专属的子元素细节 */
+:deep(.ssh-toolbar) {
   height: 40px; padding: 0 12px; display: flex; justify-content: space-between; align-items: center;
-  background: #161b22; border-bottom: 1px solid var(--ops-border);
-  .host-info { font-size: 13px; font-weight: 600; color: var(--ops-primary-hover); }
+  .host-info { font-size: 13px; font-weight: 700; color: var(--accent-blue); }
   .tools { display: flex; align-items: center; gap: 8px; }
 }
+
 .ssh-body { flex: 1; display: flex; min-height: 0; }
 .terminal-wrap { flex: 1; position: relative; min-width: 0; }
 .xterm-host { width: 100%; height: 100%; padding: 4px; box-sizing: border-box; }
 .warn-toast {
   position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-  background: #481a1a; border: 1px solid #f85149; padding: 8px 14px; border-radius: 6px;
+  background: rgba(248,81,73,0.15); border: 1px solid var(--ops-danger);
+  padding: 8px 14px; border-radius: 6px;
   color: #ff9999; font-size: 12px; z-index: 10; display: flex; align-items: center; gap: 6px;
+  backdrop-filter: blur(4px);
 }
 .sftp-wrap {
   width: 340px; border-left: 1px solid var(--ops-border);
-  display: flex; flex-direction: column; background: var(--ops-bg-secondary);
+  display: flex; flex-direction: column; background: var(--ops-bg-2);
   transition: width .2s;
   &.collapsed { width: 36px; overflow: hidden; }
 }
 .sftp-header { height: 36px; padding: 0 8px; display: flex; justify-content: space-between; align-items: center;
-  font-size: 12px; color: var(--ops-text-secondary); border-bottom: 1px solid var(--ops-border); }
+  font-size: 12px; color: var(--accent-cyan); font-weight: 600;
+  border-bottom: 1px solid var(--ops-border-soft); }
 .sftp-tools { display: flex; gap: 2px; }
 </style>
