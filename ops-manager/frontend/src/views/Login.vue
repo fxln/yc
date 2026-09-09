@@ -60,20 +60,28 @@ async function onSubmit() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 30% 30%, #1a2332 0%, #0d1117 60%);
 }
 .login-card {
-  width: 380px;
-  padding: 40px 32px;
-  background: var(--ops-bg-secondary);
-  border: 1px solid var(--ops-border);
-  border-radius: 10px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  width: 400px;
+  padding: 44px 36px 36px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-pop);
 }
-.login-header { text-align: center; margin-bottom: 28px; }
-.logo { font-size: 42px; }
-h1 { margin: 8px 0 4px; font-size: 24px; color: var(--ops-primary-hover); }
-p { margin: 0; font-size: 13px; color: var(--ops-text-secondary); }
-.btn-login { width: 100%; }
-.tip { margin-top: 16px; text-align: center; font-size: 12px; color: var(--ops-text-secondary); }
+.login-header { text-align: center; margin-bottom: 32px; }
+.logo { font-size: 48px; margin-bottom: 8px; filter: drop-shadow(0 0 16px rgba(88,166,255,0.5)); }
+h1 {
+  margin: 8px 0 4px;
+  font-size: 26px;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-purple) 50%, var(--accent-pink) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+p { margin: 0; font-size: 13px; color: var(--ops-text-2); letter-spacing: 1px; }
+.btn-login { width: 100%; height: 42px; font-size: 15px; letter-spacing: 4px; }
+.tip {
+  margin-top: 18px; text-align: center; font-size: 12px;
+  color: var(--accent-cyan); opacity: .7;
+}
 </style>

@@ -37,8 +37,10 @@
         <el-table-column prop="ip" label="IP:端口" width="160">
           <template #default="{ row }">{{ row.ip }}:{{ row.port }}</template>
         </el-table-column>
-        <el-table-column prop="protocol" label="协议" width="90">
-          <template #default="{ row }"><el-tag size="small">{{ row.protocol.toUpperCase() }}</el-tag></template>
+        <el-table-column prop="protocol" label="协议" width="100">
+          <template #default="{ row }">
+            <el-tag size="small" :class="`protocol-${row.protocol}`">{{ row.protocol.toUpperCase() }}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column prop="username" label="账号" width="120" />
         <el-table-column prop="remark" label="备注" show-overflow-tooltip />

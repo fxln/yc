@@ -1,20 +1,60 @@
 /**
- * 暗色运维主题 - 全局 SCSS
- * 覆盖 Element Plus 默认颜色
+ * 暗色多色运维主题 - 全局 SCSS
+ * 丰富色彩 Token + Element Plus 暗色覆盖 + 自定义组件风格
+ * 设计参考：Grafana / Portainer / GitHub Dark 的多彩运维配色
  */
+
+// =============== 色彩 Token ===============
 :root {
-  --ops-bg: #0d1117;
-  --ops-bg-secondary: #161b22;
-  --ops-bg-tertiary: #21262d;
-  --ops-border: #30363d;
-  --ops-text: #c9d1d9;
-  --ops-text-secondary: #8b949e;
-  --ops-primary: #388bfd;
-  --ops-primary-hover: #58a6ff;
-  --ops-success: #3fb950;
-  --ops-warning: #d29922;
-  --ops-danger: #f85149;
-  --ops-info: #58a6ff;
+  // 背景层（三级层次）
+  --ops-bg:        #0d1117;
+  --ops-bg-2:      #141a22;
+  --ops-bg-3:      #1c232c;
+  --ops-bg-4:      #252d38;
+
+  // 边框 & 分割线
+  --ops-border:    #30363d;
+  --ops-border-soft: #21262d;
+
+  // 文字
+  --ops-text:        #c9d1d9;
+  --ops-text-2:      #8b949e;
+  --ops-text-3:      #6e7681;
+  --ops-text-inverse: #0d1117;
+
+  // —— Accent 调色盘（六彩）——
+  --accent-blue:     #58a6ff;   /* 主色：侧边栏激活 / 链接 */
+  --accent-cyan:     #39c5cf;   /* SSH 终端 / 网络连通 */
+  --accent-purple:   #bc8cff;   /* VNC / 远程桌面 / 高危 */
+  --accent-pink:     #ff7b9c;   /* 告警 / 特别关注 */
+  --accent-orange:   #ffa657;   /* 连接中 / 等待 */
+  --accent-green:    #3fb950;   /* 在线 / 成功 */
+
+  // 语义色
+  --ops-primary:     var(--accent-blue);
+  --ops-success:     var(--accent-green);
+  --ops-warning:     var(--accent-orange);
+  --ops-danger:      #f85149;
+  --ops-info:        var(--accent-cyan);
+
+  // 渐变（卡片头部 / 菜单激活 / 登录页）
+  --grad-blue:    linear-gradient(135deg, #388bfd 0%, #58a6ff 100%);
+  --grad-purple:  linear-gradient(135deg, #8957e5 0%, #bc8cff 100%);
+  --grad-cyan:    linear-gradient(135deg, #2eaad8 0%, #39c5cf 100%);
+  --grad-orange:  linear-gradient(135deg, #db6d28 0%, #ffa657 100%);
+  --grad-green:   linear-gradient(135deg, #2ea043 0%, #3fb950 100%);
+  --grad-pink:    linear-gradient(135deg, #db61a2 0%, #ff7b9c 100%);
+  --grad-dashboard: linear-gradient(160deg, #58a6ff 0%, #8957e5 45%, #ff7b9c 100%);
+
+  // 状态 dot / badge
+  --status-online:   #3fb950;
+  --status-offline:  #6e7681;
+  --status-connect:  #ffa657;
+  --status-error:    #f85149;
+
+  // 阴影
+  --shadow-card:   0 2px 12px rgba(0,0,0,0.4);
+  --shadow-pop:    0 6px 24px rgba(0,0,0,0.6);
 }
 
 html, body {
@@ -22,84 +62,327 @@ html, body {
   color: var(--ops-text);
 }
 
-/* Element Plus 暗色覆盖 */
+// =============== Element Plus 暗色覆盖 ===============
+
+/* 侧边栏菜单（激活态带渐变 + 左侧彩色条） */
 .el-menu--dark {
-  background: var(--ops-bg-secondary) !important;
+  background: var(--ops-bg-2) !important;
   border-right: 1px solid var(--ops-border) !important;
   .el-menu-item, .el-sub-menu__title {
-    color: var(--ops-text-secondary) !important;
-    &:hover { background: var(--ops-bg-tertiary) !important; color: var(--ops-text) !important; }
+    color: var(--ops-text-2) !important;
+    border-left: 3px solid transparent;
+    transition: all .18s;
+    &:hover {
+      background: var(--ops-bg-3) !important;
+      color: var(--accent-blue) !important;
+      border-left-color: var(--accent-blue);
+    }
   }
-  .el-menu-item.is-active { background: var(--ops-primary) !important; color: #fff !important; }
+  .el-menu-item.is-active {
+    background: linear-gradient(90deg, rgba(88,166,255,0.15) 0%, rgba(88,166,255,0) 100%) !important;
+    color: #fff !important;
+    border-left-color: var(--accent-blue);
+    font-weight: 600;
+  }
 }
 
+/* 卡片（带彩色顶部强调条） */
 .el-card {
-  background: var(--ops-bg-secondary) !important;
-  border-color: var(--ops-border) !important;
+  background: var(--ops-bg-2) !important;
+  border: 1px solid var(--ops-border) !important;
+  border-top: 3px solid var(--accent-blue) !important;
+  border-radius: 8px !important;
   color: var(--ops-text) !important;
+  box-shadow: var(--shadow-card);
+  .el-card__header {
+    background: linear-gradient(180deg, var(--ops-bg-3) 0%, transparent 100%);
+    border-bottom: 1px solid var(--ops-border-soft);
+    font-weight: 600;
+  }
+  /* 可通过 accent 属性切换顶部色条（通过 class）*/
+  &.accent-purple { border-top-color: var(--accent-purple) !important; }
+  &.accent-cyan   { border-top-color: var(--accent-cyan)   !important; }
+  &.accent-orange { border-top-color: var(--accent-orange) !important; }
+  &.accent-green  { border-top-color: var(--accent-green)  !important; }
+  &.accent-pink   { border-top-color: var(--accent-pink)   !important; }
 }
 
+/* 表格（表头用 cyan 强调 + 行 hover 彩色） */
 .el-table {
-  background: var(--ops-bg-secondary) !important;
-  --el-table-bg-color: var(--ops-bg-secondary);
-  --el-table-tr-bg-color: var(--ops-bg-secondary);
-  --el-table-header-bg-color: var(--ops-bg-tertiary);
-  --el-table-row-hover-bg-color: #21262d;
-  --el-table-border-color: var(--ops-border);
+  background: var(--ops-bg-2) !important;
+  --el-table-bg-color: var(--ops-bg-2);
+  --el-table-tr-bg-color: var(--ops-bg-2);
+  --el-table-header-bg-color: var(--ops-bg-3);
+  --el-table-row-hover-bg-color: rgba(88,166,255,0.08);
+  --el-table-border-color: var(--ops-border-soft);
   color: var(--ops-text);
+  border-radius: 6px;
+  overflow: hidden;
+  .el-table__header th {
+    background: linear-gradient(180deg, var(--ops-bg-3) 0%, rgba(57,197,207,0.05) 100%) !important;
+    color: var(--accent-cyan);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent-cyan);
+  }
 }
 
-.el-dialog, .el-drawer {
-  background: var(--ops-bg-secondary) !important;
-  color: var(--ops-text) !important;
-}
-
+/* 输入框 / 表单 */
 .el-input__wrapper, .el-textarea__inner, .el-select__wrapper, .el-select .el-input__wrapper {
-  background: var(--ops-bg-tertiary) !important;
+  background: var(--ops-bg-3) !important;
   box-shadow: 0 0 0 1px var(--ops-border) inset !important;
   color: var(--ops-text) !important;
-  &:hover, &.is-focus { box-shadow: 0 0 0 1px var(--ops-primary) inset !important; }
-}
-
-.el-button {
-  --el-button-bg-color: var(--ops-bg-tertiary);
-  --el-button-border-color: var(--ops-border);
-  --el-button-text-color: var(--ops-text);
-}
-
-.el-pagination {
-  --el-pagination-hover-color: var(--ops-primary-hover);
-  .is-active { background: var(--ops-primary) !important; }
-}
-
-.el-tabs {
-  --el-tabs-tab-font-size: 13px;
-  .el-tabs__item { color: var(--ops-text-secondary); &.is-active { color: var(--ops-primary-hover); } }
-  .el-tabs__active-bar { background-color: var(--ops-primary); }
-  .el-tabs__nav-wrap::after { background-color: var(--ops-border); }
-}
-
-.el-tag { border: none; }
-
-.el-tree {
-  background: transparent !important;
-  color: var(--ops-text) !important;
-  .el-tree-node__content {
-    &:hover { background: var(--ops-bg-tertiary); }
+  border-radius: 6px;
+  transition: all .15s;
+  &:hover, &.is-focus {
+    box-shadow: 0 0 0 1px var(--accent-blue) inset, 0 0 0 3px rgba(88,166,255,0.18) !important;
   }
 }
 
-.el-scrollbar__thumb { background: var(--ops-border); }
+/* 按钮（彩色渐变 accent 按钮） */
+.el-button {
+  --el-button-bg-color: var(--ops-bg-3);
+  --el-button-border-color: var(--ops-border);
+  --el-button-text-color: var(--ops-text);
+  border-radius: 6px;
+  font-weight: 500;
+  &.el-button--primary {
+    background: var(--grad-blue) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    &:hover { filter: brightness(1.15); }
+  }
+  &.el-button--success { background: var(--grad-green) !important; border-color: transparent !important; color: #fff !important; }
+  &.el-button--warning { background: var(--grad-orange) !important; border-color: transparent !important; color: #fff !important; }
+  &.el-button--danger  { background: linear-gradient(135deg, #da3633 0%, #f85149 100%) !important; border-color: transparent !important; color: #fff !important; }
+  &.el-button--info    { background: linear-gradient(135deg, #2eaad8 0%, #39c5cf 100%) !important; border-color: transparent !important; color: #0d1117 !important; }
+}
 
-.el-empty { color: var(--ops-text-secondary); }
+/* 分页 */
+.el-pagination {
+  --el-pagination-hover-color: var(--accent-blue);
+  .is-active {
+    background: var(--grad-blue) !important;
+    color: #fff !important;
+    border: none !important;
+  }
+}
 
-.el-form-item__label { color: var(--ops-text) !important; }
+/* Tab（激活态紫色下划线） */
+.el-tabs {
+  --el-tabs-tab-font-size: 13px;
+  .el-tabs__item { color: var(--ops-text-2); transition: color .15s;
+    &.is-active { color: var(--accent-purple); font-weight: 600; }
+    &:hover { color: var(--accent-blue); }
+  }
+  .el-tabs__active-bar {
+    background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+    height: 3px;
+    border-radius: 2px;
+  }
+  .el-tabs__nav-wrap::after { background-color: var(--ops-border-soft); }
+}
 
-/* 通用布局 */
-.ops-shell {
-  display: flex;
-  height: 100vh;
-  width: 100%;
-  background: var(--ops-bg);
+/* Dialog / Drawer */
+.el-dialog, .el-drawer {
+  background: var(--ops-bg-2) !important;
+  color: var(--ops-text) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow-pop) !important;
+  .el-dialog__header { border-bottom: 1px solid var(--ops-border-soft); }
+  .el-dialog__title { color: var(--accent-blue); font-weight: 600; }
+}
+
+/* Tag（多色） */
+.el-tag {
+  border-radius: 4px;
+  font-weight: 500;
+  &.el-tag--success { background: rgba(63,185,80,0.15) !important; color: var(--accent-green) !important; border: 1px solid rgba(63,185,80,0.4); }
+  &.el-tag--warning { background: rgba(255,166,87,0.15) !important; color: var(--accent-orange) !important; border: 1px solid rgba(255,166,87,0.4); }
+  &.el-tag--danger  { background: rgba(248,81,73,0.15) !important; color: #f85149 !important; border: 1px solid rgba(248,81,73,0.4); }
+  &.el-tag--info    { background: rgba(57,197,207,0.15) !important; color: var(--accent-cyan) !important; border: 1px solid rgba(57,197,207,0.4); }
+  &.el-tag          { background: rgba(88,166,255,0.15) !important; color: var(--accent-blue) !important; border: 1px solid rgba(88,166,255,0.4); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--ops-bg); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+  border-radius: 4px;
+  &:hover { background: linear-gradient(180deg, var(--accent-cyan) 0%, var(--accent-pink) 100%); }
+}
+
+/* Empty / loading */
+.el-empty { color: var(--ops-text-2); }
+
+/* Divider */
+.el-divider { border-color: var(--ops-border-soft); }
+
+/* Select / Dropdown */
+.el-select-dropdown, .el-popper.is-light, .el-popper.is-dark {
+  background: var(--ops-bg-3) !important;
+  border: 1px solid var(--ops-border) !important;
+  border-radius: 6px !important;
+  color: var(--ops-text) !important;
+  .el-select-dropdown__item {
+    color: var(--ops-text) !important;
+    &.is-hovering, &:hover { background: var(--ops-bg-4); }
+    &.is-selected { color: var(--accent-blue); font-weight: 600; }
+  }
+}
+
+/* =============== 运维系统专属组件风格 =============== */
+
+/* 状态 dot（左色 + 中间圆形 + 右文字） */
+.status-dot, .node-status, .tab-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+  &.online,  &.status-online  { background: rgba(63,185,80,0.15); color: var(--status-online);   }
+  &.offline, &.status-offline { background: rgba(110,118,129,0.15); color: var(--status-offline); }
+  &.connecting, &.status-connecting { background: rgba(255,166,87,0.15); color: var(--status-connect); }
+  &.disconnected { background: rgba(248,81,73,0.15); color: var(--status-error); }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
+  }
+  &.connecting .dot { animation: pulse 1.2s ease-in-out infinite; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(1.3); }
+}
+
+/* Dashboard 统计卡片（四色 accent） */
+.stat-card {
+  text-align: center;
+  border-radius: 10px !important;
   overflow: hidden;
+  position: relative;
+  padding-bottom: 6px;
+  &::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .stat-value { font-size: 30px; font-weight: 800; letter-spacing: 1px; }
+  .stat-label { font-size: 12px; color: var(--ops-text-2); margin-top: 4px; }
+  &.stat-blue    .stat-value { color: var(--accent-blue);    }
+  &.stat-blue::before        { background: var(--grad-blue);    }
+  &.stat-green   .stat-value { color: var(--accent-green);   }
+  &.stat-green::before       { background: var(--grad-green);   }
+  &.stat-orange  .stat-value { color: var(--accent-orange);  }
+  &.stat-orange::before      { background: var(--grad-orange);  }
+  &.stat-purple  .stat-value { color: var(--accent-purple);  }
+  &.stat-purple::before      { background: var(--grad-purple);  }
+}
+
+/* 登录页多色渐变背景 */
+.login-wrapper {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(88,166,255,0.25) 0%, transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(188,140,255,0.22) 0%, transparent 40%),
+    radial-gradient(circle at 50% 85%, rgba(255,123,156,0.18) 0%, transparent 45%),
+    linear-gradient(180deg, #0d1117 0%, #0a0e14 100%);
+}
+.login-card {
+  border: 1px solid var(--ops-border) !important;
+  border-top: 3px solid transparent;
+  border-image: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-pink)) 1 !important;
+}
+
+/* 顶部状态栏：彩色会话 tab */
+.session-tabs {
+  background: linear-gradient(180deg, var(--ops-bg-2) 0%, var(--ops-bg) 100%);
+}
+.tab-label {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: var(--ops-text);
+  .close-tab { border-radius: 50%; padding: 1px; }
+  .close-tab:hover { background: var(--ops-danger); color: #fff; }
+}
+
+/* 主机树节点彩色图标 */
+.tree-node {
+  .node-label .icon.monitor-online  { color: var(--accent-green); }
+  .node-label .icon.monitor-offline { color: var(--ops-text-3);  }
+  .node-label .icon.folder          { color: var(--accent-orange); }
+}
+
+/* SSH 终端工具条（紫色强调，因为 SSH 连接通常用蓝/绿，工具条单独紫） */
+.ssh-toolbar {
+  background: linear-gradient(90deg, rgba(88,166,255,0.08) 0%, rgba(188,140,255,0.08) 100%);
+  border-bottom: 1px solid var(--accent-purple);
+}
+
+/* SFTP 文件类型图标 */
+.file-item {
+  .icon.folder { color: var(--accent-orange); }
+  .icon.document { color: var(--accent-cyan); }
+  &:hover { background: rgba(57,197,207,0.08); }
+  &.selected {
+    background: rgba(88,166,255,0.12);
+    border: 1px solid var(--accent-blue);
+  }
+}
+
+/* VNC 工具条（粉紫渐变，远程桌面的科技感） */
+.vnc-toolbar {
+  background: linear-gradient(90deg, rgba(188,140,255,0.12) 0%, rgba(255,123,156,0.12) 100%);
+  border-bottom: 1px solid var(--accent-pink);
+}
+
+/* 快捷命令面板（青色） */
+.qc-item {
+  background: rgba(57,197,207,0.08);
+  border: 1px solid rgba(57,197,207,0.25);
+  &:hover {
+    background: rgba(57,197,207,0.18);
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(57,197,207,0.15);
+  }
+}
+
+/* 主机详情卡片（彩色协议标签） */
+.el-tag.protocol-ssh { background: rgba(57,197,207,0.18); color: var(--accent-cyan);     border: 1px solid var(--accent-cyan); }
+.el-tag.protocol-vnc { background: rgba(188,140,255,0.18); color: var(--accent-purple);   border: 1px solid var(--accent-purple); }
+.el-tag.protocol-rdp { background: rgba(255,123,156,0.18); color: var(--accent-pink);    border: 1px solid var(--accent-pink); }
+.el-tag.protocol-tcp { background: rgba(255,166,87,0.18);  color: var(--accent-orange); border: 1px solid var(--accent-orange); }
+
+/* 表单必填项 * 彩色 */
+.el-form-item.is-required > .el-form-item__label::before { color: var(--accent-pink); }
+
+/* 表单项 label 彩色（让整体更有层次） */
+.el-form-item__label { color: var(--accent-blue) !important; }
+
+/* 审计日志状态彩色 */
+.log-success { color: var(--accent-green); }
+.log-fail    { color: var(--accent-pink);  }
+
+/* 进度条彩色 */
+.progress-fill {
+  background: linear-gradient(90deg, var(--grad-blue));
+}
+
+/* 全局选中文字颜色 */
+::selection {
+  background: rgba(188, 140, 255, 0.45);
+  color: #fff;
+}
+
+/* 全局链接色 */
+a { color: var(--accent-blue); &:hover { color: var(--accent-cyan); } }
+
+/* 高亮标记（搜索、警告） */
+mark {
+  background: rgba(255, 166, 87, 0.3);
+  color: var(--accent-orange);
+  padding: 0 3px;
+  border-radius: 3px;
 }
