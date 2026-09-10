@@ -93,7 +93,7 @@
         </el-tabs>
       </div>
 
-      <!-- Tab 内容 -->
+      <!-- Tab 内容：优先显示活跃会话；无会话时显示路由页面（dashboard/hosts/...） -->
       <div class="session-body">
         <SSHTerminal
           v-if="activeTab && activeTab.type === 'ssh'"
@@ -111,18 +111,7 @@
           :tab="activeTab"
           @close="tabsStore.closeTab(activeTab.id)"
         />
-        <div v-else class="session-empty">
-          <el-empty description="暂无远程会话">
-            <template #image>
-              <div style="font-size:64px">🖥️</div>
-            </template>
-            <template #description>
-              <div style="color:var(--ops-text-2)">暂无远程会话</div>
-              <div style="color:var(--ops-text-3);font-size:12px;margin-top:4px">从左侧主机树或主机管理页点击「连接」开始</div>
-            </template>
-            <el-button type="primary" @click="router.push('/hosts')">去主机管理</el-button>
-          </el-empty>
-        </div>
+        <router-view v-else />
       </div>
     </section>
   </div>
